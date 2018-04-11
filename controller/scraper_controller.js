@@ -18,8 +18,10 @@ const cheerio = require('cheerio');
 const mongoose = require('mongoose');
 
 // Requiring models
-var Note = require("./../models/Notes.js");
-var Articles = require("./../models/Articles.js");
+// var Note = require("./../models/Note.js");
+// var Article = require("./../models/Article.js");
+
+var db = require("../models");
 
 router.get('/', function (req, res) {
 
@@ -38,45 +40,47 @@ router.get('/scrape', function (req, res) {
 
       // With cheerio, find each p-tag with the "title" class
       // (i: iterator. element: the current element)
-      $("a.js_curation-click").each(function(i, element) {
+      $("article").each(function(i, element) {
         // Save the text of the element in a "title" variable
-        var title = $(element).text();
+        var title = $(this).children("header").children("h1").children("a").text();
 
-        // In the currently selected element, look at its child elements (i.e., its a-tags),
-        // then save the values for any "href" attributes that the child elements may have
-        var link = $(element).attr("href");
-        console.log(title, link);
+        var link=$(this).children("header").children("h1").children("a").attr("href");
 
-        // Save these results in an object that we'll push into the results array we defined earlier
-        results.push({
-          title: title,
-          link: link
-        });
-        $(".content-meta__excerpt").each(function(i, element) {
-          // Save the text of the element in a "title" variable
-          var summary = $(element).children().text();
-          console.log("summary" + summary);
-          console.log(element);
-          // Save these results in an object that we'll push into the results array we defined earlier
-          results.push({
-              summary: summary
+        var summary = $(this).children(".item__content").children(".excerpt").children("p").text();
+
+        var article = {
+            title: title,
+            link: link,
+            summary: summary
+        }
+
+        db.Article.create(article)
+          .then(function(dbArticle) {
+            // View the added result in the console
+            console.log(dbArticle);
+          })
+          .catch(function(err) {
+            // If an error occurred, send it to the client
+            return res.json(err);
           });
-        });
-
+          results.push(article);
       });
 
-      // Log the results once you've looped through each of the elements found with cheerio
+      
       console.log(results);
+
+      // Log the results once you've looped through each of the elements found with cheerio
+      // console.log(results);
     });
 
 
-}); // router.get '/scrape'
-
+}); // router.get '/scrape'  this grabs stuff from the artice when you click on the article? getting info from database.. .getting note from article.
 router.get('/article/:id', function (req, res) {
 
 
 
 }); // router.post '/homes'
+// when you make a note and you press submit you need to put that note in that artice in the database - posts the notes to the article  and this one you are putting the note in the database with the article.
 
 router.post('/article/:id', function (req, res) {
 

@@ -1,6 +1,7 @@
 // Dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
+var logger = require("morgan");
 var mongoose = require("mongoose");
 // Our scraping tools
 var request = require("request");
@@ -8,15 +9,19 @@ var cheerio = require("cheerio");
 
 //will need to require models (.js files)
 
-var PORT = process.env.PORT || 8080;
+var PORT = process.env.PORT || 3100;
 
 // Initialize Express
 var app = express();
 
-
+// Use morgan logger for logging requests
+app.use(logger("dev"));
+// Use body-parser for handling form submissions
+app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static content
 app.use(express.static("public"));
 
+var db = require("./models");
 // Set Handlebars.
 var exphbs = require("express-handlebars");
 
@@ -28,7 +33,7 @@ var routes = require("./controller/scraper_controller.js");
 
 app.use("/", routes);
 
-mongoose.connect();
+mongoose.connect("mongodb://localhost/onion");
 
 var db = mongoose.connection;
 
@@ -38,7 +43,7 @@ db.on("error", function(error) {
 });
 
 // logging into mongoosedb
-db.once("open", function() {
+db.on("open", function() {
   console.log("Mongoose connection successful.");
 });
 
