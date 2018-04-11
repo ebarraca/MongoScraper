@@ -7,6 +7,7 @@ var mongoose = require("mongoose");
 var request = require("request");
 var cheerio = require("cheerio");
 
+
 //will need to require models (.js files)
 
 var PORT = process.env.PORT || 3100;
@@ -21,17 +22,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static content
 app.use(express.static("public"));
 
-var db = require("./models");
 // Set Handlebars.
 var exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
-
-// Import routes and give the server access to them.
-var routes = require("./controller/scraper_controller.js");
-
-app.use("/", routes);
 
 mongoose.connect("mongodb://localhost/onion");
 
@@ -46,6 +41,95 @@ db.on("error", function(error) {
 db.on("open", function() {
   console.log("Mongoose connection successful.");
 });
+
+var db = require("./models");
+
+app.get('/', function (req, res) {
+    // db.Article.find({})
+    //   .then(function(dbArticle) {
+    //     // If we were able to successfully find Articles, send them back to the client
+    //     res.json(dbArticle);
+    //   })
+    //   .catch(function(err) {
+    //     // If an error occurred, send it to the client
+    //     res.json(err);
+    //   });
+
+res.send("Hello im working")
+});
+
+app.get('/scrape', function (req, res) {
+    request("https://www.theonion.com", function(error, response, html) {
+
+      // Load the HTML into cheerio and save it to a variable
+      // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
+      var $ = cheerio.load(html);
+
+      // An empty array to save the data that we'll scrape
+      var results = [];
+
+      // With cheerio, find each p-tag with the "title" class
+      // (i: iterator. element: the current element)
+      $("article").each(function(i, element) {
+        // Save the text of the element in a "title" variable
+        var title = $(this).children("header").children("h1").children("a").text();
+
+        var link=$(this).children("header").children("h1").children("a").attr("href");
+
+        var summary = $(this).children(".item__content").children(".excerpt").children("p").text();
+
+        var article = {
+            title: title,
+            link: link,
+            summary: summary
+        }
+
+        db.Article.create(article)
+          .then(function(dbArticle) {
+            // View the added result in the console
+            console.log(dbArticle);
+          })
+          .catch(function(err) {
+            // If an error occurred, send it to the client
+            return res.json(err);
+          });
+          results.push(article);
+      });
+
+
+      console.log(results);
+
+      // Log the results once you've looped through each of the elements found with cheerio
+      // console.log(results);
+    });
+
+
+    app.get("/articles", function(req, res) {
+        db.Article.find({}).populate("note")
+          .then(function(dbArticle) {
+            // If all Notes are successfully found, send them back to the client
+            res.json(dbArticle);
+          })
+          .catch(function(err) {
+            // If an error occurs, send the error back to the client
+            res.json(err);
+          });
+    });
+
+
+
+});
+app.get('/article/:id', function (req, res) {
+
+
+
+});
+
+app.post('/article/:id', function (req, res) {
+
+
+});
+
 
 // Listen on port 3000
 app.listen(PORT, function() {
