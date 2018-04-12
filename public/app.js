@@ -2,32 +2,41 @@
 $.getJSON("/articles", function(data) {
   // For each one
   for (var i = 0; i < data.length; i++) {
+     var savedArticleButton =  "<button class='savedArticleButton' data-id='" + data[i]._id + "'> SAVE ARTICLE </button>"
     // Display the apropos information on the page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>" + "<button class = 'savedArticleButton' data-id='" + data[i]._id + ">SAVE ARTICLE</button>");
-    $("#articles").append(".savedArticleButton");
+    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+    $("#articles").append(savedArticleButton);
   }
+
   console.log(data)
 });
 
 
-
-
-
-
-
-
 // Whenever someone clicks a p tag
-$(document).on("click", "savedArticleButton", function() {
+$(document).on("click", ".savedArticleButton", function() {
   // Empty the notes from the note section
-  $("#notes").empty();
   // Save the id from the p tag
   var thisId = $(this).attr("data-id");
 
   // Now make an ajax call for the Article
   $.ajax({
-    method: "GET",
-    url: "/articles/" + thisId
+    method: "PUT",
+    contentType: 'application/json',
+    data: JSON.stringify({
+      _id: thisId,
+      saved:true
+    }),
+    url: "/articles/" + thisId,
   })
+
+
+
+
+
+
+
+
+
     // With that done, add the note information to the page
     .then(function(data) {
       console.log(data);

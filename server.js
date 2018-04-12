@@ -19,6 +19,8 @@ var app = express();
 app.use(logger("dev"));
 // Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 // Serve static content
 app.use(express.static("public"));
 
@@ -116,12 +118,17 @@ app.get('/scrape', function (req, res) {
           });
     });
 
-
-
 });
-app.get('/article/:id', function (req, res) {
-
-
+app.put('/articles/:id', function (req, res) {
+    db.Article.findOneAndUpdate({_id:req.params.id}, {$set:req.body})
+    .then(function(dbArticle) {
+      // If all Notes are successfully found, send them back to the client
+      res.redirect('/saved');
+    })
+    .catch(function(err) {
+      // If an error occurs, send the error back to the client
+      res.json(err);
+    });
 
 });
 
