@@ -97,14 +97,13 @@ app.get('/scrape', function (req, res) {
           });
           results.push(article);
       });
-
-
       console.log(results);
 
       // Log the results once you've looped through each of the elements found with cheerio
       // console.log(results);
     });
 
+});
 
     app.get("/articles", function(req, res) {
         db.Article.find({}).populate("note")
@@ -118,12 +117,38 @@ app.get('/scrape', function (req, res) {
           });
     });
 
-});
-app.put('/articles/:id', function (req, res) {
+    app.get("/saved", function(req, res) {
+        // db.Article.find({})
+        //   .then(function(dbArticle) {
+        //     // If all Notes are successfully found, send them back to the client
+        //     res.json(dbArticle);
+        //   })
+        //   .catch(function(err) {
+        //     // If an error occurs, send the error back to the client
+        //     res.json(err);
+        //   });
+    });
+
+    app.get("/articles/:id", function(req, res) {
+        console.log(req.body)
+
+        db.Article.find({_id:req.params.id})
+          .then(function(dbArticle) {
+            // If all Notes are successfully found, send them back to the client
+            res.json(dbArticle);
+          })
+          .catch(function(err) {
+            // If an error occurs, send the error back to the client
+            res.json(err);
+
+          });
+    });
+
+app.post('/articles/:id', function (req, res) {
     db.Article.findOneAndUpdate({_id:req.params.id}, {$set:req.body})
     .then(function(dbArticle) {
       // If all Notes are successfully found, send them back to the client
-      res.redirect('/saved');
+      res.redirect('/articles');
     })
     .catch(function(err) {
       // If an error occurs, send the error back to the client
@@ -131,12 +156,6 @@ app.put('/articles/:id', function (req, res) {
     });
 
 });
-
-app.post('/article/:id', function (req, res) {
-
-
-});
-
 
 // Listen on port 3000
 app.listen(PORT, function() {
