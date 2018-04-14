@@ -27,6 +27,20 @@ $(document).on("click", ".savedArticleButton", function() {
     })
 });
 
+$(document).on("click", "#navButton", function() {
+    console.log("message")
+
+    // make an ajax call for the Article
+    $.ajax({
+        method: "GET",
+        contentType: 'application/json',
+        url: "/scrape/",
+        success: function(data) {
+            console.log(data);
+        }
+    })
+});
+
 
 // PSUEDOCODE:
 //scrape articles button doesnt work. needs to have jquery to make it scrape the articles.
