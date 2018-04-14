@@ -1,40 +1,31 @@
 // Grab the articles as a json
 $.getJSON("/articles", function(data) {
-  // For each one
-  for (var i = 0; i < data.length; i++) {
-     var savedArticleButton =  "<button class='savedArticleButton' href='/saved' data-id='" + data[i]._id + "'> SAVE ARTICLE </button>"
-    // Display the apropos information on the page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-    $("#articles").append(savedArticleButton); 
-  }
+    // For each one
+    for (var i = 0; i < data.length; i++) {
+        var savedArticleButton = "<button class='savedArticleButton' href='/saved' data-id='" + data[i]._id + "'> SAVE ARTICLE </button>"
+        // Display the apropos information on the page
+        $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+        $("#articles").append(savedArticleButton);
+    }
 
-  console.log(data)
+    console.log(data)
 });
-
 
 // Whenever someone clicks a p tag
 $(document).on("click", ".savedArticleButton", function() {
-  var thisId = $(this).attr("data-id");
-
-  // make an ajax call for the Article
-  $.ajax({
-    method: "POST",
-    contentType: 'application/json',
-    data: JSON.stringify({
-      _id: thisId,
-      saved:true
-    }),
-    url: "/articles/" + thisId,
-    success: function(data) {
-           console.log(data);
-       }
-  })
-
-  $(#navButton).on("click", function() {
-    // Empty the notes from the note section
-    $("#notes").empty();
-    // Save the id from the p tag
     var thisId = $(this).attr("data-id");
+
+    // make an ajax call for the Article
+    $.ajax({
+        method: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({_id: thisId, saved: true}),
+        url: "/articles/" + thisId,
+        success: function(data) {
+            console.log(data);
+        }
+    })
+});
 
 
 // PSUEDOCODE:
