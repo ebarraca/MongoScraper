@@ -41,8 +41,6 @@ mongoose.connect(MONGODB_URI, {
 });
 
 
-mongoose.connect("mongodb://localhost/onion");
-
 var db = mongoose.connection;
 
 // Show any mongoose errors

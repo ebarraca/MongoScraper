@@ -29,12 +29,13 @@ $(document).on("click", ".savedArticleButton", function() {
 
 
 // PSUEDOCODE:
+//scrape articles button doesnt work. needs to have jquery to make it scrape the articles.
 
 // Im trying to do a ajax put route/ajax call to put the saved article on its own route.
 // And put it on the saved route, but its not working. tried alternating between post and put routes. having no luck.
-//
+
 // on the page with the saved articles, i would have a notes button and a delete button. The notes button would take the id of the article and it would be a post route with a modal posted and you would save the note after its been passed through the notes model into the notes collection into the database.
-//
+
 // the delete button would have a route for /delete/:id and under that route there would be a mongoose.delete of the article and delete it from the database.
-//
+
 // add a delete route; add a href button with delete; under delete/:id route you would do the mongoose.delete.
